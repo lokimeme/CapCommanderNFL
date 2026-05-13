@@ -1,0 +1,9 @@
+nfl_data_py
+duckdb
+pandas
+streamlit
+plotly
+altair
+numpy
+python-dotenv
+requests
