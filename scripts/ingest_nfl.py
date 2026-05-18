@@ -32,7 +32,11 @@ def ingest_nfl_data(years=[2023, 2024]):
     logger.info("Fetching depth charts...")
     depth_charts_df = nfl.import_depth_charts(years)
     
-    # 4. Save to DuckDB
+    # 4. Import Seasonal Stats (for Surplus Yield)
+    logger.info("Fetching seasonal performance data...")
+    seasonal_df = nfl.import_seasonal_data(years)
+    
+    # 5. Save to DuckDB
     con = duckdb.connect(DB_PATH)
     
     logger.info("Saving rosters to DuckDB...")
@@ -43,6 +47,9 @@ def ingest_nfl_data(years=[2023, 2024]):
     
     logger.info("Saving depth charts to DuckDB...")
     con.execute("CREATE OR REPLACE TABLE depth_charts AS SELECT * FROM depth_charts_df")
+    
+    logger.info("Saving seasonal stats to DuckDB...")
+    con.execute("CREATE OR REPLACE TABLE seasonal_stats AS SELECT * FROM seasonal_df")
     
     con.close()
     logger.info("Ingestion complete.")
