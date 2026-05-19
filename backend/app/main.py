@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from backend.app.core.database import engine, Base
 from backend.app.models import team, player, contract, stats, scenario
-from backend.app.api import teams, players, contracts, stats as stats_api, scenarios, admin, analytics, strategy, market
+from backend.app.api import teams, players, contracts, stats as stats_api, scenarios, admin, analytics, strategy, market, free_agency
 from backend.app.core.middleware import LoggingMiddleware
 import logging
 
@@ -51,3 +51,4 @@ app.include_router(admin.router)
 app.include_router(analytics.router)
 app.include_router(strategy.router)
 app.include_router(market.router)
+app.include_router(free_agency.router)

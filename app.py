@@ -257,22 +257,24 @@ class CapCommanderV2UI:
 
     def _render_fa_engine(self):
         st.header("Free Agency Recommendation Engine")
-        st.success("Targeting 3 High-Priority Positional Needs")
-        
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.info("**Target 1: EDGE**")
-            st.write("Best Fit: Josh Allen (JAX)")
-            st.write("Est. APY: $24.5M")
-        with col2:
-            st.info("**Target 2: WR**")
-            st.write("Best Fit: Tee Higgins (CIN)")
-            st.write("Est. APY: $21.0M")
-        with col3:
-            st.info("**Target 3: OT**")
-            st.write("Best Fit: Tyron Smith (DAL)")
-            st.write("Est. APY: $12.0M")
 
+        with st.spinner("Analyzing roster gaps and market value..."):
+            res = self._fetch(f"/free-agency/recommendations/{st.session_state['active_team']}")
+
+        if res and res.get('recommendations'):
+            st.success(f"Targeting {len(res['recommendations'])} High-Priority Positional Needs")
+
+            recs = res['recommendations']
+            cols = st.columns(len(recs))
+
+            for i, (col, fa) in enumerate(zip(cols, recs)):
+                with col:
+                    st.info(f"**Target {i+1}: {fa['position']}**")
+                    st.write(f"Best Fit: {fa['player']}")
+                    st.write(f"Est. APY: ${fa['cost']}M")
+                    st.caption(f"Strategic Fit: {fa['priority_addressed']} Need")
+        else:
+            st.info("No high-priority free agency recommendations at this time.")
     def _render_war_room(self):
         st.header("War Room Scenario Simulator")
         
