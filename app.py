@@ -6,6 +6,7 @@ import requests
 from st_aggrid import AgGrid, GridOptionsBuilder
 import os
 import time
+import numpy as np
 
 API_BASE_URL = os.getenv("API_URL", "http://localhost:8000")
 
