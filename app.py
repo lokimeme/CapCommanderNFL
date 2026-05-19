@@ -7,8 +7,21 @@ from st_aggrid import AgGrid, GridOptionsBuilder
 import os
 import time
 import numpy as np
+import threading
+import uvicorn
+from backend.app.main import app as fastapi_app
 
-API_BASE_URL = os.getenv("API_URL", "http://localhost:8000")
+# --- BACKEND AUTO-LAUNCHER (For Cloud Deployment) ---
+def run_backend():
+    uvicorn.run(fastapi_app, host="127.0.0.1", port=8000, log_level="error")
+
+if "backend_started" not in st.session_state:
+    thread = threading.Thread(target=run_backend, daemon=True)
+    thread.start()
+    st.session_state["backend_started"] = True
+    time.sleep(2) # Give it a moment to spin up
+
+API_BASE_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 class CapCommanderV2UI:
     
@@ -64,7 +77,7 @@ class CapCommanderV2UI:
 
     def _fetch(self, endpoint: str, params: dict = None):
         try:
-            res = requests.get(f"{API_BASE_URL}{endpoint}", params=params, timeout=5)
+            res = requests.get(f"{API_BASE_URL}{endpoint}", params=params, timeout=30)
             if res.status_code == 200: return res.json()
             return None
         except Exception as e:
@@ -73,24 +86,31 @@ class CapCommanderV2UI:
 
     def render_sidebar(self):
         with st.sidebar:
-            st.title("🏈 CapCommander V2")
-            st.caption("Enterprise Front Office Suite v2.4.0")
+            st.title("CapCommander V2")
             st.divider()
             
             teams = self._fetch("/teams/")
-            if teams:
-                team_abbrs = sorted([t['team_abbr'] for t in teams])
-                st.session_state['active_team'] = st.selectbox("Active Franchise", team_abbrs, index=team_abbrs.index(st.session_state['active_team']))
-                team_info = next(t for t in teams if t['team_abbr'] == st.session_state['active_team'])
-                st.image(team_info['logo_url'], width=120)
-                st.subheader(f"{team_info['team_nick']}")
+            if teams is not None:
+                st.session_state['backend_status'] = "online"
+                if teams:
+                    team_abbrs = sorted([t['team_abbr'] for t in teams])
+                    if st.session_state['active_team'] not in team_abbrs:
+                        st.session_state['active_team'] = team_abbrs[0]
+                    st.session_state['active_team'] = st.selectbox("Active Franchise", team_abbrs, index=team_abbrs.index(st.session_state['active_team']))
+                    team_info = next(t for t in teams if t['team_abbr'] == st.session_state['active_team'])
+                    st.image(team_info['logo_url'], width=120)
+                    st.subheader(f"{team_info['team_nick']}")
+                    return team_info
+                else:
+                    st.warning("No teams found in database.")
+                    return None
             else:
-                st.warning("Could not load teams. Sync database.")
+                st.session_state['backend_status'] = "offline"
                 return None
 
             st.divider()
             st.subheader("🛠 Admin Controls")
-            if st.button("🔄 Trigger Global Sync", use_container_width=True):
+            if st.button("🔄 Trigger Global Sync", width='stretch'):
                 requests.post(f"{API_BASE_URL}/admin/sync")
                 st.toast("Background Ingestion Started", icon="🚀")
                 st.session_state['last_sync'] = time.strftime("%H:%M:%S")
@@ -98,8 +118,8 @@ class CapCommanderV2UI:
             st.caption(f"Last Sync: {st.session_state['last_sync']}")
             
             st.subheader("💾 Scenario Management")
-            s_name = st.text_input("Blueprint Name", "Vison 2024")
-            if st.button("Save Current Session", use_container_width=True):
+            s_name = st.text_input("Blueprint Name", "Vison 2026")
+            if st.button("Save Current Session", width='stretch'):
                 payload = {
                     "team_abbr": st.session_state['active_team'],
                     "name": s_name,
@@ -146,20 +166,20 @@ class CapCommanderV2UI:
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            st.subheader("Interactive Draft Board")
+            st.subheader("Interactive Draft Board (2026 Class)")
             mock_board = pd.DataFrame({
                 'Rank': range(1, 11),
-                'Prospect': ["Caleb Williams", "Drake Maye", "Marvin Harrison Jr", "Jayden Daniels", "Joe Alt", "Brock Bowers", "Malik Nabers", "Olu Fashanu", "Rome Odunze", "JC Latham"],
-                'Position': ["QB", "QB", "WR", "QB", "OT", "TE", "WR", "OT", "WR", "OT"],
-                'Grade': [9.6, 9.4, 9.5, 9.1, 8.9, 8.8, 8.7, 8.6, 8.5, 8.4]
+                'Prospect': ["Fernando Mendoza", "Caleb Downs", "David Bailey", "Arvell Reese", "Jeremiyah Love", "Sonny Styles", "Mansoor Delane", "Carnell Tate", "Jordyn Tyson", "Francis Mauigoa"],
+                'Position': ["QB", "S", "EDGE", "LB/EDGE", "RB", "LB", "CB", "WR", "WR", "OT"],
+                'Grade': [9.8, 9.7, 9.6, 9.4, 9.3, 9.2, 9.1, 9.0, 8.9, 8.8]
             })
-            st.dataframe(mock_board, use_container_width=True, hide_index=True)
+            st.dataframe(mock_board, width='stretch', hide_index=True)
             
         with col2:
             st.subheader("Trade-Up Evaluator")
             target_pick = st.number_input("Target Pick #", 1, 32, 5)
             if st.button("Calculate Move-Up Cost"):
-                st.code("Suggested Package:\n- Pick 22 (1st Rd)\n- Pick 54 (2nd Rd)\n- 2025 1st Rd Pick\n\nEquity Ratio: 1.12 (Fair)")
+                st.code("Suggested Package:\n- Pick 22 (1st Rd)\n- Pick 54 (2nd Rd)\n- 2027 1st Rd Pick\n\nEquity Ratio: 1.12 (Fair)")
 
     def _render_league_audit(self):
         st.header("🏢 League-Wide Financial Audit")
@@ -171,17 +191,17 @@ class CapCommanderV2UI:
         })
         fig = px.treemap(pos_data, path=['Position'], values='Avg Spending ($M)',
                          color='Avg Spending ($M)', color_continuous_scale='RdBu')
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         
         col1, col2 = st.columns(2)
         with col1:
             st.subheader("Cap Space Distribution")
             hist_fig = px.histogram(pd.DataFrame({'Space': np.random.normal(30, 20, 32)}), x='Space', 
                                     nbins=10, title="League Parity Index")
-            st.plotly_chart(hist_fig, use_container_width=True)
+            st.plotly_chart(hist_fig, width='stretch')
         with col2:
             st.subheader("Financial Distress Flags")
-            st.error("🚩 **New Orleans Saints**: Projected -$42M in 2025")
+            st.error("🚩 **New Orleans Saints**: Projected -$42M in 2027")
             st.warning("⚠️ **Buffalo Bills**: High Dead Cap concentration (22%)")
             st.info("ℹ️ **Houston Texans**: Optimal Roster Efficiency Score (92.4)")
 
@@ -190,12 +210,12 @@ class CapCommanderV2UI:
         players = self._fetch("/analytics/vorp", params={"team_abbr": st.session_state['active_team']})
         if players:
             df = pd.DataFrame(players)
-            st.dataframe(df, use_container_width=True, hide_index=True)
+            st.dataframe(df, width='stretch', hide_index=True)
             
             fig = px.bar(df.head(10), x='player', y='vorp', color='vorp',
                          title="Top 10 Value Producers (VORP)",
                          color_continuous_scale='Viridis')
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         else:
             st.info("Ingest data to see VORP analytics.")
 
@@ -210,7 +230,7 @@ class CapCommanderV2UI:
         with col2:
             st.subheader("Contract Cliff Identification")
             st.markdown("""
-                - 🚩 **Player A**: Performance Cliff in 2025
+                - 🚩 **Player A**: Performance Cliff in 2027
                 - 🟢 **Player B**: Stable Value until 2027
                 - 🚩 **Player C**: Dead Cap Albatross
             """)
@@ -226,7 +246,7 @@ class CapCommanderV2UI:
                 'Retention %': [1.0, 1.0, 0.98, 0.92, 0.85, 0.75, 0.60, 0.45, 0.30]
             })
             fig = px.area(data, x='Years Past Peak', y='Retention %', title="Production Retention Curve")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
             
         with col2:
             st.subheader("Market Inflation Analysis")
@@ -286,8 +306,10 @@ class CapCommanderV2UI:
             self.render_dashboard(team_info)
             st.divider()
             self._render_about()
-        else:
+        elif st.session_state.get('backend_status') == "offline":
             st.error("Backend unavailable. Run 'make run-backend' first.")
+        else:
+            st.warning("Database is empty. Click 'Trigger Global Sync' in the sidebar or run 'make ingest'.")
 
     def _render_about(self):
         st.header("📖 About CapCommander NFL")
