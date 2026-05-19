@@ -13,32 +13,49 @@ def ingest_teams(db: Session):
     logger.info("Fetching team data...")
     teams_df = nfl.import_team_desc()
     for _, row in teams_df.iterrows():
-        team = Team(
-            team_abbr=row['team_abbr'],
-            team_nick=row['team_nick'],
-            team_color=row['team_color'],
-            team_color2=row['team_color2'],
-            logo_url=row['team_logo_espn']
-        )
-        db.merge(team)
+        existing_team = db.query(Team).filter(Team.team_abbr == row['team_abbr']).first()
+        if existing_team:
+            existing_team.team_nick = row['team_nick']
+            existing_team.team_color = row['team_color']
+            existing_team.team_color2 = row['team_color2']
+            existing_team.logo_url = row['team_logo_espn']
+        else:
+            team = Team(
+                team_abbr=row['team_abbr'],
+                team_nick=row['team_nick'],
+                team_color=row['team_color'],
+                team_color2=row['team_color2'],
+                logo_url=row['team_logo_espn']
+            )
+            db.add(team)
     db.commit()
     logger.info("Teams ingested successfully.")
 
-def ingest_players_and_contracts(db: Session, years=[2023, 2024]):
+def ingest_players_and_contracts(db: Session, years=[2024]):
     logger.info("Fetching roster and contract data...")
     rosters_df = nfl.import_seasonal_rosters(years)
     contracts_df = nfl.import_contracts()
     
     for _, row in rosters_df.iterrows():
-        player = Player(
-            gsis_id=row['player_id'],
-            name=row['player_name'],
-            position=row['position'],
-            age=row['age'],
-            years_exp=row['years_exp'],
-            team_abbr=row['team']
-        )
-        db.merge(player)
+        player_id = row['player_id']
+        existing_player = db.query(Player).filter(Player.gsis_id == player_id).first()
+        if existing_player:
+            existing_player.name = row['player_name']
+            existing_player.position = row['position']
+            existing_player.age = row['age']
+            existing_player.years_exp = row['years_exp']
+            existing_player.team_abbr = row['team']
+        else:
+            player = Player(
+                gsis_id=player_id,
+                name=row['player_name'],
+                position=row['position'],
+                age=row['age'],
+                years_exp=row['years_exp'],
+                team_abbr=row['team']
+            )
+            db.add(player)
+            db.flush()
     db.commit()
     
     for _, row in contracts_df.iterrows():
@@ -77,7 +94,7 @@ def ingest_players_and_contracts(db: Session, years=[2023, 2024]):
     db.commit()
     logger.info("Players and contracts ingested successfully.")
 
-def ingest_stats(db: Session, years=[2023, 2024]):
+def ingest_stats(db: Session, years=[2024]):
     logger.info("Fetching seasonal performance data...")
     seasonal_df = nfl.import_seasonal_data(years)
     

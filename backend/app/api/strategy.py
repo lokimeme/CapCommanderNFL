@@ -20,10 +20,10 @@ def optimize_roster(team_abbr: str, target: float, db: Session = Depends(get_db)
     
     roster_data = []
     for p, c, s in players:
-        y2024 = next((y for y in c.years if y.year == 2024), None)
-        if y2024:
+        y2026 = next((y for y in c.years if y.year == 2026), None)
+        if y2026:
             roster_data.append({
-                "name": p.name, "cap_hit": y2024.cap_number, "base_salary": y2024.base_salary,
+                "name": p.name, "cap_hit": y2026.cap_number, "base_salary": y2026.base_salary,
                 "total_epa": s.total_epa, "contract_obj": c
             })
     return RosterOptimizer.find_optimal_cap_fixes(roster_data, target)
