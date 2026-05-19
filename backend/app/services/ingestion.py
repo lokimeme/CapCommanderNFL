@@ -59,22 +59,38 @@ def ingest_players_and_contracts(db: Session, years=[2024]):
     db.commit()
     
     for _, row in contracts_df.iterrows():
-        player_exists = db.query(Player).filter(Player.gsis_id == row['gsis_id']).first()
+        player_id = row['gsis_id']
+        player_exists = db.query(Player).filter(Player.gsis_id == player_id).first()
         if not player_exists:
             continue
             
-        contract = Contract(
-            player_id=row['gsis_id'],
-            otc_id=row['otc_id'],
-            team_abbr=row['team'],
-            total_value=row['value'],
-            avg_annual=row['apy'],
-            total_guaranteed=row['guaranteed'],
-            contract_length=row['years'],
-            year_signed=row['year_signed']
-        )
-        db.add(contract)
-        db.flush()
+        # Check if contract already exists
+        existing_contract = db.query(Contract).filter(Contract.player_id == player_id).first()
+        if existing_contract:
+            # Update existing contract
+            existing_contract.otc_id = row['otc_id']
+            existing_contract.team_abbr = row['team']
+            existing_contract.total_value = row['value']
+            existing_contract.avg_annual = row['apy']
+            existing_contract.total_guaranteed = row['guaranteed']
+            existing_contract.contract_length = row['years']
+            existing_contract.year_signed = row['year_signed']
+            contract = existing_contract
+            # Clear old contract years for a fresh update
+            db.query(ContractYear).filter(ContractYear.contract_id == contract.id).delete()
+        else:
+            contract = Contract(
+                player_id=player_id,
+                otc_id=row['otc_id'],
+                team_abbr=row['team'],
+                total_value=row['value'],
+                avg_annual=row['apy'],
+                total_guaranteed=row['guaranteed'],
+                contract_length=row['years'],
+                year_signed=row['year_signed']
+            )
+            db.add(contract)
+            db.flush()
         
         cols = row.get('cols', [])
         if isinstance(cols, list):
