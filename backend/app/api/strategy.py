@@ -10,6 +10,8 @@ from backend.app.models.stats import SeasonalStats
 
 router = APIRouter(prefix="/strategy", tags=["strategy"])
 
+from backend.app.services.trade_engine import simulate_multi_team_trade
+
 @router.get("/optimize/{team_abbr}")
 def optimize_roster(team_abbr: str, target: float, db: Session = Depends(get_db)):
     players = db.query(Player, Contract, SeasonalStats).filter(
@@ -31,3 +33,11 @@ def optimize_roster(team_abbr: str, target: float, db: Session = Depends(get_db)
 @router.post("/draft/trade-up")
 def evaluate_trade_up(target_pick: int, team_picks: List[int]):
     return DraftStrategyService.calculate_trade_up_cost(target_pick, team_picks)
+
+@router.post("/trade/simulate")
+def trade_machine(trade_config: List[Dict]):
+    """
+    Simulates a multi-team trade.
+    Expects List of {from_team, to_team, asset: {type: 'player'|'pick', ...}}
+    """
+    return simulate_multi_team_trade(trade_config, current_year=2026)

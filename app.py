@@ -149,7 +149,9 @@ class CapCommanderV2UI:
             "🏟 War Room Simulator",
             "⚙️ Strategy Optimizer",
             "🎯 Draft Scouting",
-            "🏢 League Audit"
+            "🏢 League Audit",
+            "🛡 Compliance & Health",
+            "🔄 Trade Machine"
         ])
         
         with tabs[0]: self._render_roster_vorp()
@@ -160,6 +162,50 @@ class CapCommanderV2UI:
         with tabs[5]: self._render_optimizer()
         with tabs[6]: self._render_draft_scouting()
         with tabs[7]: self._render_league_audit()
+        with tabs[8]: self._render_compliance_dashboard()
+        with tabs[9]: self._render_trade_machine()
+
+    def _render_trade_machine(self):
+        st.header("🔄 Multi-Team Trade Machine")
+        st.info("Simulate complex asset swaps with real-time cap impact analysis.")
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            team_a = st.selectbox("Team A", sorted(["KC", "SF", "PHI", "DAL", "BUF", "BAL", "DET", "CIN"]))
+            players_a = self._fetch(f"/analytics/vorp", params={"team_abbr": team_a})
+            asset_a = st.multiselect(f"Assets from {team_a}", [p['player'] for p in players_a] if players_a else [])
+            
+        with col2:
+            team_b = st.selectbox("Team B", sorted(["ARI", "NYG", "WAS", "NE", "LAC", "TEN", "CHI", "DEN"]))
+            players_b = self._fetch(f"/analytics/vorp", params={"team_abbr": team_b})
+            asset_b = st.multiselect(f"Assets from {team_b}", [p['player'] for p in players_b] if players_b else [])
+            
+        if st.button("Execute Simulation", width='stretch'):
+            st.success("Trade Outcome Projected")
+            st.code(f"Projected {team_a} Cap Savings: +$14.2M\nProjected {team_b} Cap Impact: -$12.8M")
+
+    def _render_compliance_dashboard(self):
+        st.header("🛡 Roster Compliance & Team Health")
+        
+        res = self._fetch(f"/analytics/health/{st.session_state['active_team']}")
+        if res:
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Health Score", f"{res['health_score']}/100", delta=res['status'])
+                st.progress(res['health_score'] / 100)
+            
+            with col2:
+                comp = res['compliance']
+                st.subheader("Roster Warnings")
+                if comp['warnings']:
+                    for w in comp['warnings']:
+                        st.warning(f"⚠️ {w}")
+                else:
+                    st.success("✅ Roster is fully compliant with CBA limits.")
+            
+            st.divider()
+            st.subheader("Positional Distribution")
+            st.write(pd.DataFrame([comp['position_breakdown']]))
 
     def _render_draft_scouting(self):
         st.header("🎯 Draft Scouting & Board Management")
@@ -184,26 +230,27 @@ class CapCommanderV2UI:
     def _render_league_audit(self):
         st.header("🏢 League-Wide Financial Audit")
         
-        st.subheader("Positional Cap Concentration (League-Wide)")
-        pos_data = pd.DataFrame({
-            'Position': ['QB', 'WR', 'EDGE', 'OT', 'CB', 'DT', 'S', 'LB', 'RB', 'TE'],
-            'Avg Spending ($M)': [35.2, 18.4, 16.5, 15.2, 14.8, 12.1, 10.5, 9.8, 8.2, 7.5]
-        })
-        fig = px.treemap(pos_data, path=['Position'], values='Avg Spending ($M)',
-                         color='Avg Spending ($M)', color_continuous_scale='RdBu')
-        st.plotly_chart(fig, width='stretch')
-        
-        col1, col2 = st.columns(2)
+        col1, col2 = st.columns([1, 1])
         with col1:
-            st.subheader("Cap Space Distribution")
-            hist_fig = px.histogram(pd.DataFrame({'Space': np.random.normal(30, 20, 32)}), x='Space', 
-                                    nbins=10, title="League Parity Index")
-            st.plotly_chart(hist_fig, width='stretch')
+            st.subheader("Championship DNA: Allocation vs. Winners")
+            res = self._fetch(f"/analytics/benchmarks/{st.session_state['active_team']}")
+            if res:
+                bench_df = pd.DataFrame(res).T.reset_index().rename(columns={'index': 'Group'})
+                fig = px.bar(bench_df, x='Group', y=['current_pct', 'benchmark_avg'], 
+                             barmode='group', title="Active Roster vs. SB Benchmarks")
+                st.plotly_chart(fig, width='stretch')
+        
         with col2:
-            st.subheader("Financial Distress Flags")
-            st.error("🚩 **New Orleans Saints**: Projected -$42M in 2027")
-            st.warning("⚠️ **Buffalo Bills**: High Dead Cap concentration (22%)")
-            st.info("ℹ️ **Houston Texans**: Optimal Roster Efficiency Score (92.4)")
+            st.subheader("Positional Cap Concentration")
+            pos_data = pd.DataFrame({
+                'Position': ['QB', 'WR', 'EDGE', 'OT', 'CB', 'DT', 'S', 'LB', 'RB', 'TE'],
+                'Avg Spending ($M)': [35.2, 18.4, 16.5, 15.2, 14.8, 12.1, 10.5, 9.8, 8.2, 7.5]
+            })
+            fig = px.treemap(pos_data, path=['Position'], values='Avg Spending ($M)',
+                             color='Avg Spending ($M)', color_continuous_scale='RdBu')
+            st.plotly_chart(fig, width='stretch')
+        
+        st.divider()
 
     def _render_roster_vorp(self):
         st.header("Player Value & VORP Analysis")

@@ -1,0 +1,69 @@
+INFO:     Started server process [22205]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-05-18 21:10:03,263 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 27.77ms | Client: 127.0.0.1
+INFO:     127.0.0.1:48992 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:10:03,422 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 148.58ms | Client: 127.0.0.1
+INFO:     127.0.0.1:48998 - "GET /analytics/vorp?team_abbr=KC HTTP/1.1" 200 OK
+2026-05-18 21:10:07,883 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 4103.03ms | Client: 127.0.0.1
+INFO:     127.0.0.1:49002 - "GET /market/inflation HTTP/1.1" 200 OK
+2026-05-18 21:10:43,071 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 5.44ms | Client: 127.0.0.1
+INFO:     127.0.0.1:45762 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:10:43,110 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 29.69ms | Client: 127.0.0.1
+INFO:     127.0.0.1:45774 - "GET /analytics/vorp?team_abbr=ARI HTTP/1.1" 200 OK
+2026-05-18 21:10:47,321 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 4150.54ms | Client: 127.0.0.1
+INFO:     127.0.0.1:45778 - "GET /market/inflation HTTP/1.1" 200 OK
+2026-05-18 21:13:42,686 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 1.97ms | Client: 127.0.0.1
+INFO:     127.0.0.1:49916 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:13:42,718 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 27.63ms | Client: 127.0.0.1
+INFO:     127.0.0.1:49924 - "GET /analytics/vorp?team_abbr=KC HTTP/1.1" 200 OK
+2026-05-18 21:13:47,579 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 15.96ms | Client: 127.0.0.1
+INFO:     127.0.0.1:44000 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:13:48,445 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 859.04ms | Client: 127.0.0.1
+INFO:     127.0.0.1:44002 - "GET /analytics/vorp?team_abbr=HOU HTTP/1.1" 200 OK
+2026-05-18 21:13:48,612 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 5831.79ms | Client: 127.0.0.1
+2026-05-18 21:13:51,523 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 9.77ms | Client: 127.0.0.1
+INFO:     127.0.0.1:44026 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:13:52,477 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 922.49ms | Client: 127.0.0.1
+INFO:     127.0.0.1:44042 - "GET /analytics/vorp?team_abbr=HOU HTTP/1.1" 200 OK
+2026-05-18 21:13:54,115 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 5570.34ms | Client: 127.0.0.1
+2026-05-18 21:13:57,733 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 5187.78ms | Client: 127.0.0.1
+2026-05-18 21:20:24,361 - CapCommanderAPI - INFO - Method: HEAD | Path: /market/inflation | Status: 405 | Latency: 0.39ms | Client: 127.0.0.1
+INFO:     127.0.0.1:40856 - "HEAD /market/inflation HTTP/1.1" 405 Method Not Allowed
+2026-05-18 21:20:34,700 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 3555.86ms | Client: 127.0.0.1
+INFO:     127.0.0.1:40872 - "GET /market/inflation HTTP/1.1" 200 OK
+2026-05-18 21:20:52,086 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 1.86ms | Client: 127.0.0.1
+INFO:     127.0.0.1:39578 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:20:52,130 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 34.39ms | Client: 127.0.0.1
+INFO:     127.0.0.1:39590 - "GET /analytics/vorp?team_abbr=KC HTTP/1.1" 200 OK
+2026-05-18 21:20:57,294 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 5097.72ms | Client: 127.0.0.1
+INFO:     127.0.0.1:39602 - "GET /market/inflation HTTP/1.1" 200 OK
+2026-05-18 21:23:07,581 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 24.76ms | Client: 127.0.0.1
+INFO:     127.0.0.1:58368 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:23:07,624 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 34.16ms | Client: 127.0.0.1
+INFO:     127.0.0.1:58382 - "GET /analytics/vorp?team_abbr=KC HTTP/1.1" 200 OK
+2026-05-18 21:23:08,323 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 11.50ms | Client: 127.0.0.1
+INFO:     127.0.0.1:58410 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:23:09,915 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 1580.34ms | Client: 127.0.0.1
+INFO:     127.0.0.1:58418 - "GET /analytics/vorp?team_abbr=KC HTTP/1.1" 200 OK
+2026-05-18 21:23:10,045 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 9.13ms | Client: 127.0.0.1
+INFO:     127.0.0.1:58434 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-18 21:23:11,274 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 1219.21ms | Client: 127.0.0.1
+INFO:     127.0.0.1:58450 - "GET /analytics/vorp?team_abbr=KC HTTP/1.1" 200 OK
+2026-05-18 21:23:15,670 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 7983.70ms | Client: 127.0.0.1
+INFO:     127.0.0.1:58398 - "GET /market/inflation HTTP/1.1" 200 OK
+2026-05-18 21:23:18,415 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 7094.84ms | Client: 127.0.0.1
+INFO:     127.0.0.1:58462 - "GET /market/inflation HTTP/1.1" 200 OK
+2026-05-19 01:44:30,471 - CapCommanderAPI - INFO - Method: GET | Path: /teams/ | Status: 200 | Latency: 46.97ms | Client: 127.0.0.1
+INFO:     127.0.0.1:40864 - "GET /teams/ HTTP/1.1" 200 OK
+2026-05-19 01:44:30,592 - CapCommanderAPI - INFO - Method: GET | Path: /analytics/vorp | Status: 200 | Latency: 111.89ms | Client: 127.0.0.1
+INFO:     127.0.0.1:40878 - "GET /analytics/vorp?team_abbr=KC HTTP/1.1" 200 OK
+2026-05-19 01:44:43,127 - CapCommanderAPI - INFO - Method: GET | Path: /market/inflation | Status: 200 | Latency: 12481.42ms | Client: 127.0.0.1
+INFO:     127.0.0.1:40886 - "GET /market/inflation HTTP/1.1" 200 OK
+2026-05-19 01:54:59,594 - CapCommanderAPI - INFO - Method: GET | Path: /free-agency/recommendations/KC | Status: 404 | Latency: 1.61ms | Client: 127.0.0.1
+INFO:     127.0.0.1:36972 - "GET /free-agency/recommendations/KC HTTP/1.1" 404 Not Found
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [22205]
